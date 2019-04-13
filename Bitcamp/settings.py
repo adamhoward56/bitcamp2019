@@ -39,8 +39,8 @@ INSTALLED_APPS = [
     'django.contrib.staticfiles',
     'rest_framework',
     'rest_framework.authtoken',
-    'Users',
     'Tips',
+    'Users',
 ]
 
 MIDDLEWARE = [
@@ -81,7 +81,7 @@ DATABASES = {
     'default': {
         'ENGINE': 'django.db.backends.postgresql_psycopg2',
         'NAME': 'bitcamp',
-        'USER': 'adam',
+        'USER': 'postgres',
         'PASSWORD': '?Defen08',
         'HOST': 'localhost',
         'PORT': '',

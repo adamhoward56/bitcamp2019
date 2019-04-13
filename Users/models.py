@@ -3,14 +3,16 @@ from django.contrib.auth.models import User
 from django.contrib import admin
 from django.db.models.signals import post_save
 from django.dispatch import receiver
+from Tips.models import *
 
 # User profile to add extra fields to each user account
 class Profile(models.Model):
     user = models.OneToOneField(User, on_delete=models.CASCADE)
-    location = models.CharField(max_length=30, blank=True)
+    location = models.ForeignKey('Tips.Location', on_delete=models.DO_NOTHING, default=None, null=True)
+    tags = models.ManyToManyField('Tips.Tag')
 
     def __str__(self):
-        return self.user.username + ", " + self.location
+        return self.user.username
 
 admin.site.register(Profile)
 
