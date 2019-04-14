@@ -15,9 +15,6 @@ from rest_framework.status import (
     HTTP_200_OK
 )
 
-# Token for Adam: ad419c6656d598c4bd93a0eba5d8d3096ad2d5f6
-# Create your views here.
-
 # USER LOGIN
 @csrf_exempt
 @api_view(["POST"])
@@ -26,11 +23,12 @@ def login(request):
     # Decode the request body
     body_unicode = request.body.decode('utf-8')
     body = json.loads(body_unicode)
-    data = json.loads(body['data'])
+    if 'data' in body:
+        body = json.loads(body['data'])
 
     # Get the proper values
-    username = data['username']
-    password = data['password']
+    username = body['username']
+    password = body['password']
     if username is None or password is None:
         return Response({'error': 'Please provide both username and password'}, status=HTTP_400_BAD_REQUEST)
     
@@ -38,6 +36,7 @@ def login(request):
     if "@" in username:
         try:
             usr = User.objects.get(email=username)
+            username = usr.username
         except User.DoesNotExist:
             return Response({'error': 'Invalid Credentials'}, status=HTTP_404_NOT_FOUND)
 
@@ -54,10 +53,16 @@ def login(request):
 @api_view(["POST"])
 @permission_classes((AllowAny,))
 def register(request):
-    username = request.data.get("username")
-    email = request.data.get("email")
-    password = request.data.get("password")
-    confirm_password = request.data.get("confirm_password")
+    # Parse the JSON to get fields
+    body_unicode = request.body.decode('utf-8')
+    body = json.loads(body_unicode)
+    if 'data' in body:
+        body = json.loads(body['data'])
+
+    username = body['username']
+    email = body['email']
+    password = body['password']
+    confirm_password = body['confirm_password']
     error = []
 
     # Make sure all fields are provided
