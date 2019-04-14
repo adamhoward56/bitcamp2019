@@ -1,4 +1,4 @@
-import re
+import re, json
 from django.contrib.auth import authenticate
 from django.contrib.auth.models import User
 from django.shortcuts import render
@@ -23,8 +23,14 @@ from rest_framework.status import (
 @api_view(["POST"])
 @permission_classes((AllowAny,))
 def login(request):
-    username = request.data.get("username")
-    password = request.data.get("password")
+    # Decode the request body
+    body_unicode = request.body.decode('utf-8')
+    body = json.loads(body_unicode)
+    data = json.loads(body['data'])
+
+    # Get the proper values
+    username = data['username']
+    password = data['password']
     if username is None or password is None:
         return Response({'error': 'Please provide both username and password'}, status=HTTP_400_BAD_REQUEST)
     
@@ -101,3 +107,15 @@ def register(request):
 
 def failure( request ):
     return HttpResponse("Nothing here.")
+
+# API TESTS
+class TestAuth(APIView):
+    permission_classes = (IsAuthenticated,)
+    def get(self, request):
+        content = {'message': 'Successfully GET request with authenticated token!'}
+        return Response(content)
+
+class TestNoAuth(APIView):
+    def get(self, request):
+        content = {'message': 'Successful GET request without authentication!'}
+        return Response(content)
